@@ -24,7 +24,17 @@ let arr=[{
         count:150
     },
     price:399
-}];
+},
+{
+  image:"F:\js\javascript-amazon-project\images\products\black-2-slot-toaster.jpg";
+  name:'2 Slot Toaster',
+  rating:{
+    stars:4.0,
+    count:120
+  },
+  price:489
+}
+];
 
 let productsHtml='';
 arr.forEach((value)=>{
