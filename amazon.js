@@ -1,43 +1,5 @@
-let arr=[{
-    image:'images/products/athletic-cotton-socks-6-pairs.jpg',
-    name:'Black and Gray Athletic Cotton Socks - 6 Pairs',
-     rating:{
-        stars:4.0,
-        count:80
-    },
-    price:100
-},
-{
-    image:'images/products/intermediate-composite-basketball.jpg',
-    name:'Intermediate Size Basketball',
-    rating:{
-        stars:4.5,
-        count:90
-    },
-    price:500
-},
-{
-    image:'images/products/adults-plain-cotton-tshirt-2-pack-teal.jpg',
-    name:'Adults Plain Cotton T-Shirt - 2 Pack',
-     rating:{
-        stars:3.5,
-        count:150
-    },
-    price:399
-},
-{
-  image:"F:\js\javascript-amazon-project\images\products\black-2-slot-toaster.jpg";
-  name:'2 Slot Toaster',
-  rating:{
-    stars:4.0,
-    count:120
-  },
-  price:489
-}
-];
-
 let productsHtml='';
-arr.forEach((value)=>{
+products.forEach((value)=>{
     productsHtml+=`
         <div class="product-container">
           <div class="product-image-container">
@@ -58,7 +20,7 @@ arr.forEach((value)=>{
           </div>
 
           <div class="product-price">
-            ${value.price}RS
+            $${(value.priceCents/100).toFixed(2)}
           </div>
 
           <div class="product-quantity-container">
