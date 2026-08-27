@@ -58,17 +58,18 @@ document.querySelector('.product-display').innerHTML=productsHtml;
 const buttons = document.querySelectorAll('.addToCart');
 
 function updateQuantity(){
-  let totalQuantity=0;
-        cart.forEach(item=> totalQuantity+=item.quantity
-        );
-        document.querySelector(".cartQuantity").innerHTML=totalQuantity;
+  const totalQuantity = cart.reduce((total, item) => total + Number(item.quantity || 0), 0);
+  document.querySelector('.cartQuantity').textContent = totalQuantity;
 }
 buttons.forEach((button) => {
     button.addEventListener('click', () => {
-      console.log(button.dataset.productname);
-        let pId=button.dataset.productname;
-        addQuantity(pId);
+        const pId = button.dataset.productname;
+        const productContainer = button.closest('.product-container');
+        const quantity = productContainer.querySelector('select').value;
+        addQuantity(pId, quantity);
         updateQuantity();       
     });
 
 }); 
+
+updateQuantity();
