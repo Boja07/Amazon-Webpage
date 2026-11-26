@@ -1,22 +1,20 @@
 import { products } from "../data/products.js";
-import { cart, removeCartProduct } from "../data/cart.js";
+import { cart } from "../data/cart.js";
 import dayjs from "./dayjs.js";
 import { deliveyOptions } from "../data/deliveyOptions.js";
 
 const cartSummaryContainer = document.querySelector(".Summary");
 const paymentSummaryRows = document.querySelectorAll(".payment-summary-row");
 
-function formatMoney(cents) {
-  return `$${(cents / 100).toFixed(2)}`;
+export function formatMoney(cents) {
+  return `$${Math.round((cents / 100)).toFixed(2)}`;
 }
 
 function getProductById(productId) {
   return products.find((product) => product.id === productId) || null;
 }
 
-function saveCart() {
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
+// We can remove saveCart() because we now have cart.saveLocalStorage() !
 
 function getShippingOptionForItem(cartItem) {
   const selectedId = String(cartItem.deliveyOptionsId || deliveyOptions[0].id);
@@ -24,7 +22,7 @@ function getShippingOptionForItem(cartItem) {
 }
 
 function renderHeaderCount() {
-  const totalItems = cart.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const totalItems = cart.cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
   const headerLink = document.querySelector(".checkout-header-middle-section .return-to-home-link");
 
   if (headerLink) {
@@ -33,14 +31,14 @@ function renderHeaderCount() {
 }
 
 function renderPaymentSummary() {
-  const itemCount = cart.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
-  const subtotalCents = cart.reduce((sum, cartItem) => {
+  const itemCount = cart.cartItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+  const subtotalCents = cart.cartItems.reduce((sum, cartItem) => {
     const product = getProductById(cartItem.id);
     if (!product) return sum;
     return sum + product.priceCents * Number(cartItem.quantity || 0);
   }, 0);
 
-  const shippingCents = cart.reduce((sum, cartItem) => {
+  const shippingCents = cart.cartItems.reduce((sum, cartItem) => {
     const shippingOption = getShippingOptionForItem(cartItem);
     return sum + shippingOption.priceCents * Number(cartItem.quantity || 0);
   }, 0);
@@ -80,7 +78,7 @@ function renderPaymentSummary() {
 function renderCheckout() {
   if (!cartSummaryContainer) return;
 
-  const validCartItems = cart.filter((cartItem) => getProductById(cartItem.id));
+  const validCartItems = cart.cartItems.filter((cartItem) => getProductById(cartItem.id));
 
   if (validCartItems.length === 0) {
     cartSummaryContainer.innerHTML = `
@@ -169,7 +167,7 @@ function renderCheckout() {
   document.querySelectorAll(".deleteButton").forEach((button) => {
     button.addEventListener("click", () => {
       const productId = button.dataset.deleteproductid;
-      removeCartProduct(productId);
+      cart.removeCartProduct(productId);
       renderCheckout();
     });
   });
@@ -177,12 +175,12 @@ function renderCheckout() {
   document.querySelectorAll(".quantity-select").forEach((select) => {
     select.addEventListener("change", (event) => {
       const productId = event.target.dataset.productid;
-      const matchingCartItem = cart.find((item) => item.id === productId);
+      const matchingCartItem = cart.cartItems.find((item) => item.id === productId);
 
       if (!matchingCartItem) return;
 
       matchingCartItem.quantity = Number(event.target.value);
-      saveCart();
+      cart.saveLocalStorage();
       renderCheckout();
     });
   });
@@ -191,12 +189,12 @@ function renderCheckout() {
     radio.addEventListener("change", (event) => {
       const productId = event.target.dataset.productId;
       const selectedOptionId = event.target.value;
-      const matchingCartItem = cart.find((item) => item.id === productId);
+      const matchingCartItem = cart.cartItems.find((item) => item.id === productId);
 
       if (!matchingCartItem) return;
 
       matchingCartItem.deliveyOptionsId = selectedOptionId;
-      saveCart();
+      cart.saveLocalStorage();
       renderCheckout();
     });
   });
